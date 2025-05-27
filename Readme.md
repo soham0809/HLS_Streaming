@@ -86,7 +86,39 @@ docker build -t video_transcoder .
 docker run -it -v C:/Users/soham/Desktop/HLS_STREAMING/videos:/home/app/videos video_transcoder
 
 ffmpeg -i videos/sample.mp4 \
- -codec:v libx264 -codec:a aac \
+ -vf "scale=w=854:h=480" -c:a aac -ar 48000 -b:a 128k \
+ -c:v h264 -profile:v main -crf 20 -g 48 -keyint*min 48 -sc_threshold 0 \
  -hls_time 10 -hls_playlist_type vod \
- -hls_segment_filename videos/outputs/segment%03d.ts \
- -start_number 0 videos/outputs/index.m3u8
+ -hls_segment_filename videos/outputs/480p/segment*%03d.ts \
+ videos/outputs/480p/index.m3u8
+
+ffmpeg -i videos/sample.mp4 \
+ -vf "scale=w=1280:h=720" -c:a aac -ar 48000 -b:a 128k \
+ -c:v h264 -profile:v main -crf 20 -g 48 -keyint*min 48 -sc_threshold 0 \
+ -hls_time 10 -hls_playlist_type vod \
+ -hls_segment_filename videos/outputs/720p/segment*%03d.ts \
+ videos/outputs/720p/index.m3u8
+
+ffmpeg -i videos/sample.mp4 \
+ -vf "scale=w=1920:h=1080" -c:a aac -ar 48000 -b:a 192k \
+ -c:v h264 -profile:v high -crf 20 -g 48 -keyint*min 48 -sc_threshold 0 \
+ -hls_time 10 -hls_playlist_type vod \
+ -hls_segment_filename videos/outputs/1080p/segment*%03d.ts \
+ videos/outputs/1080p/index.m3u8
+
+manually.
+#EXTM3U
+
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480
+480p/index.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=1280x720
+720p/index.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1920x1080
+1080p/index.m3u8
+
+## UPDATE V2
+
+NODEJS BACKEND
+npm install and npm start
